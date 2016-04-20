@@ -31,10 +31,10 @@ parcels <- read.csv( "https://raw.githubusercontent.com/lecy/code-orange/master/
 
 ## Map Set-Up ##
 
-#Should this be subset less than 50,000?
+
 
 #lat.lon
-lat.lon <- dat[ 1:50000, c("lat","lon") ] # sample for dev purposes
+lat.lon <- dat[ , c("lat","lon","Code") ] 
 lat.lon <- na.omit( lat.lon )
 
 #pop up 
@@ -185,6 +185,14 @@ rm (acres.owned, by.owneropen, by.ownerp, by.ownerv, by.prop,
 
 
 
+getData <- function( start.date, end.date )
+{     these <- violation.date >= start.date & violation.date <= end.date
+      return(  na.omit( lat.lon[ these, ] )  ) 
+}
+
+
+
+
 ###################################################
 ################ SERVER SECTION ###################
 ###################################################
@@ -235,15 +243,17 @@ my.server <- function(input, output)
   
   output$mymap <- renderLeaflet({
     
+    temp.dat <- getData( start.date=input$dateRange[[1]], end.date=input$dateRange[[2]] )
+    
     # build base map on load
     syr.map <- leaflet(data=lat.lon ) %>% 
       addProviderTiles("CartoDB.Positron", tileOptions(minZoom=10, maxZoom=17))  %>%
       setView(lng=-76.13, lat=43.03, zoom=13) %>%
       setMaxBounds(lng1=-75, lat1=41, lng2=-77,  lat2=45)
     
-    syr.map <- addCircleMarkers( syr.map, lng = lat.lon$lon, lat = lat.lon$lat, 
-                                 col=colvec(), popup = violation.description, 
-                                 radius = .5)
+    syr.map <- addCircleMarkers( syr.map, lng = temp.dat$lon, lat = temp.dat$lat, 
+                                 popup = temp.dat$Code, 
+                                 radius=4, color=NA, fillColor=colvec() )
   })
   
   
@@ -475,7 +485,11 @@ my.ui <- navbarPage("Orangespot", id="nav", collapsible=T,
                                                
                                                tabPanel("Controls",
                                                         
-                                                        selectInput("color", "Colour by:",
+                                                        dateRangeInput('dateRange',
+							      label = 'Select Date Range',
+							      start = "2014-12-01", end = "2014-12-31"),
+                                                        
+                                                        selectInput("color", "Color by:",
                                                                     choices=list("Open/Closed", "Severity", "Time to Close")), #"Days to Comply")),
                                                         
                                                         hr(class="thin"),
