@@ -184,9 +184,10 @@ rm (acres.owned, by.owneropen, by.ownerp, by.ownerv, by.prop,
 
 
 
+# violation.date <- dat$Violation.Date
 
 getData <- function( start.date, end.date )
-{     these <- violation.date >= start.date & violation.date <= end.date
+{     these <- dat$Violation.Date >= start.date & dat$Violation.Date <= end.date
       return(  na.omit( lat.lon[ these, ] )  ) 
 }
 
@@ -246,7 +247,7 @@ my.server <- function(input, output)
     temp.dat <- getData( start.date=input$dateRange[[1]], end.date=input$dateRange[[2]] )
     
     # build base map on load
-    syr.map <- leaflet(data=lat.lon ) %>% 
+    syr.map <- leaflet(data=temp.dat ) %>% 
       addProviderTiles("CartoDB.Positron", tileOptions(minZoom=10, maxZoom=17))  %>%
       setView(lng=-76.13, lat=43.03, zoom=13) %>%
       setMaxBounds(lng1=-75, lat1=41, lng2=-77,  lat2=45)
