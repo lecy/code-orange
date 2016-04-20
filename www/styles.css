@@ -1,0 +1,176 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,300,400italic,400,700);
+
+div.outer {
+  position: fixed;
+  top: 41px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+body, label, input, button, select {
+  font-family: 'Open Sans', sans-serif;a;
+  font-weight: 300;
+}
+
+h1, h2, h3, h4 { font-weight: 400; }
+
+#controls {
+  background-color: white;
+  padding: 0 20px 0px 20px;
+  cursor: move;
+  /* Fade out while not hovering */
+  opacity: 0.7;
+  transition: opacity 500ms 1s;
+  /*font-size: smaller;*/
+}
+#controls:hover {
+  /* Fade in while hovering */
+  opacity: 1;
+  transition-delay: 0;
+}
+
+/* Position and style citation */
+#cite {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-size: 12px;
+  background-color: #efefef;
+  padding: 2px;
+}
+
+/* If not using map tiles, show a white background */
+.leaflet-container {
+  background-color: white !important;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+div.leaflet-control-zoom {
+    margin-top: 25px !important;
+}
+
+
+.shiny-input-container {
+  margin: 0 auto;
+}
+
+.shiny-plot-output {
+  margin: 0 auto;
+}
+
+.control-label {
+  margin-top: 4px;
+}
+
+.legend {
+  background: rgba(255,255,255,1);
+  max-width: 90px;
+}
+
+p.foot {
+  font-size: .95rem;
+  text-align: center;
+}
+
+hr.thin {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.row{
+  margin: 0 auto;
+}
+
+@media screen and (max-width: 768px) {
+     #controls {
+       display: none;
+     }
+
+     div.mobile-panel {
+       display: block;
+       padding: 5px 10px;
+       background: rgba(255,255,255,.9);
+       position: fixed;
+       /* float: right;*/
+       left: 0;
+       right: 0;
+       bottom: 0;
+       margin: 0 auto 5px auto;
+       font-size: smaller;
+       width: 100%;
+       max-width: 500px;
+       z-index: 99;
+     }
+
+     div.leaflet-bottom {
+       top: 15px;
+       right: 5px;
+       bottom: auto;
+       left: auto;
+     }
+
+     div.leaflet-control-attribution {
+       display: none;
+     }
+
+     div.radio{
+       font-size: smaller;
+     }
+
+     /* compact pop-ups on mobile */
+     div.leaflet-popup-content {
+       width: 140px !important;
+       font-size: smaller;
+       margin: 5px;
+       padding: 0px;
+     }
+}
+
+#base {
+  max-width: 100px;
+}
+
+/* slider tweaks */
+.irs-single{
+  background: rgba(0, 0, 0, 0.5);
+}
+.irs-single::after{
+  border-top-color: rgba(0, 0, 0, 0.5);
+}
+
+/* spacing tweaks for lower controls */
+label.control-label[for=base]{
+  margin-bottom: 1px !important;
+}
+
+label.control-label[for=scale]{
+  margin-bottom: 10px;
+}
+
+.nav-tabs{
+  margin-bottom: 5px;
+}
+
+p.intro{
+  margin-bottom: 15px;
+}
+
+p.topp {
+  margin-top: 10px;
+}
+
+/* static plot positioning tweaks */
+
+div#monthTotals img {
+  margin-left: 2px;
+}
+
+div#month_waffle img {
+  margin-left: 10px;
+}
