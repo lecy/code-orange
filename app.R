@@ -491,11 +491,11 @@ my.ui <- navbarPage("Orangespot", id="nav", collapsible=T,
                     #Tab 1. MAP
                     tabPanel("Map",
                               tags$head(
-                                includeScript("analytics.js"),
+                                includeScript("https://github.com/subartle/orangespot/blob/master/www/analytics.js"),
                                 tags$link(rel = "stylesheet", type = "text/css",
                                           href = "ion.rangeSlider.skinFlat.css"),
-                                includeScript("spin.min.js"),
-                                includeCSS("styles.css")
+                                includeScript("https://github.com/subartle/orangespot/blob/master/www/spin.min.js"),
+                                includeCSS("https://github.com/subartle/orangespot/blob/master/www/styles.css")
                               ),
                               
                               leafletOutput("mymap", width="100%", height="800" ), 
