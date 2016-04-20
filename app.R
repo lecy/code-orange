@@ -498,7 +498,7 @@ my.ui <- navbarPage("Orangespot", id="nav", collapsible=T,
                                                           a("", href="",
                                                             target="_blank"),
                                                           HTML("&bull;"), "See the code on ",
-                                                          a("github", href="http://github.com/subartle/orangespot",
+                                                          a("github", href="http://github.com/lecy/code-orange",
                                                             target="_blank"),
                                                           class="foot")
                                                ),
