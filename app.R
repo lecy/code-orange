@@ -10,7 +10,9 @@
 ################ SET-UP SECTION ###################
 ###################################################
 
-#### LOAD LIBRARIES ###
+#setwd("C:/Users/snhalbritter/Documents/GitHub/code-orange")
+
+## LOAD LIBRARIES ##
 
 library( RCurl )
 library( shiny )
@@ -20,59 +22,33 @@ library( DT )
 library( dplyr )
 library( leaflet )
 
-#### DATA STEPS ####
+## Read in Data ##
 
-code.violations <- read.csv("https://raw.githubusercontent.com/subartle/orangespot/master/data/code%20violations.csv")
-code.severity <- read.csv("https://raw.githubusercontent.com/subartle/orangespot/master/data/Severity.csv")
-code.violations <- merge(code.violations, code.severity, by.x = "Code", by.y = "Row.Labels", all.x=T )
-code.violations$Severity[is.na(code.violations$Severity)] <- "FALSE"  #this makes the NA in severity 0
+dat <- readRDS("data/code.violations.final.rds")
 
-#Convert to time class
-code.violations$Violation.Date <- as.Date(code.violations$Violation.Date,format = "%m/%d/%Y")
-code.violations$Complaint.Close.Date <- as.Date(code.violations$Complaint.Close.Date, format = "%m/%d/%Y")
-code.violations$Complaint.Date <- as.Date(code.violations$Complaint.Date, "%m/%d/%Y")
-code.violations$Comply.By.Date <- as.Date(code.violations$Comply.By.Date, format = "%m/%d/%Y")
+#reading parcels in for hector for now
+parcels <- read.csv( "https://raw.githubusercontent.com/lecy/code-orange/master/data/parcels.csv" )
 
-#new variables representing time between dates and getting rid of negative amounts (due to incorrect data entry)
-code.violations <- mutate(code.violations, TimeBetweenOCB = code.violations$Comply.By.Date - code.violations$Violation.Date)
-code.violations$TimeBetweenOCB[code.violations$TimeBetweenOCB < 0 ] <- NA
-code.violations <- mutate(code.violations, TimeBetweenCV = (code.violations$Complaint.Date - code.violations$Violation.Date) )
-code.violations$TimeBetweenCV[code.violations$TimeBetweenCV < 0 ] <- NA
-code.violations <- mutate(code.violations, TimeBetweenOC = (code.violations$Complaint.Close.Date - code.violations$Violation.Date))
-code.violations$TimeBetweenOC[code.violations$TimeBetweenOC < 0 ] <- NA
-code.violations$TimeBetweenOC[is.na(code.violations$TimeBetweenOC)] <- 9999  #this makes the NA in severity 0
+## Map Set-Up ##
+
+#Should this be subset less than 50,000?
 
 #lat.lon
-lat.lon <- code.violations[ 1:50000, c("lat","lon") ] # sample for dev purposes
+lat.lon <- dat[ 1:50000, c("lat","lon") ] # sample for dev purposes
 lat.lon <- na.omit( lat.lon )
 
 #pop up 
-violation.description <- code.violations$Code 
+violation.description <- dat$Code 
 
 
+## Graphs Set-Up ##
 
-# Funtimes with dygraphs
-
-
-
-
-
-
-#~#~#~#~#~##~#~#
-###Need to confirm with Jacqui/Ben that this is the right data source, but the code works with this link right now.##
-dat <- read.csv("https://raw.githubusercontent.com/jacquibuchanan/SyrCode/master/SyracuseCodeViolations.csv")
-#~#~#~#~#~##~#~#
-
-
-
-
-
+## Complaints ##
 # Drop dates before 2012
-complaint.date <- as.Date( dat$Violation.Date, "%m/%d/%Y" )
-pre.2012 <- complaint.date > "2011-12-31"
-dat <- dat[ pre.2012 , ]
-
-complaint.date <- as.Date( dat$Violation.Date, "%m/%d/%Y" )
+complaint.date <- dat$Violation.Date
+post.2012 <- complaint.date > "2011-12-31"
+dat.post.2012 <- dat[ post.2012 , ]
+complaint.date <- dat.post.2012$Violation.Date
 
 # this creates a factor for month-year
 month.year <- cut( complaint.date, breaks="month" )
@@ -81,7 +57,8 @@ month.year <- cut( complaint.date, breaks="month" )
 month.year.name <- format( complaint.date, "%b-%Y" )
 
 # table( dat$Complaint.Type, month.year )
-dat$month.year <- month.year
+dat.post.2012$month.year <- month.year
+
 
 complaint.types <- c("Property Maintenance-Int", 
                      "Trash/Debris-Private, Occ", 
@@ -96,22 +73,15 @@ complaint.types <- c("Property Maintenance-Int",
                      "Infestation",
                      "Other (FPB)")
 
-# I tried to keep the syntax as close to yours as possible for the corresponding violation data
+## Violations ##
 
-dat.v <- read.csv("https://raw.githubusercontent.com/jacquibuchanan/SyrCode/master/SyracuseCodeViolations.csv")
-
-# Drop dates before 2012
-vio.date <- as.Date( dat.v$Violation.Date, "%m/%d/%Y" )
-vpost.2012 <- vio.date > "2011-12-31"
-dat.v <- dat.v[ vpost.2012, ]
-
-vio.date <- as.Date( dat.v$Violation.Date, "%m/%d/%Y" )
+vio.date <- dat.post.2012$Violation.Date
 
 m.year <- cut( vio.date, breaks="month" )
 m.y.name <- format( vio.date, "%b-%Y" )
 
 # table( dat$Complaint.Type, month.year )
-dat.v$m.year <- m.year
+dat.post.2012$m.year <- m.year
 
 violation.types <- c("Section 305.3 - Interior surfaces",
                      "Section 27-72 (f) - Overgrowth",
@@ -129,29 +99,17 @@ violation.types <- c("Section 305.3 - Interior surfaces",
 
 
 
-##Start Most Wanted Section##
+## Property Ownership ##
 
-
-
-dat.3 <- read.csv("https://raw.githubusercontent.com/subartle/orangespot/master/data/code%20violations.csv")
-
-parcels <- read.csv( "https://raw.githubusercontent.com/hectorlca/Code-Violations/master/data/parcels.csv" )
-
-cv <- dat.3[ !( is.na(dat.3$lon) | is.na(dat.3$lat)) , ]
-
-merged <- merge( cv, parcels, by.x="Identifier", by.y="SBL" )
 
 ### Data Table Explorer
-
-
-
-explorer <- select(merged, Complaint.Type, Violation.Date, Comply.By.Date, 
+explorer <- select(dat, Complaint.Type, Violation.Date, Comply.By.Date, 
                    Violation.Status, Complaint.Status, Owner, Nhood, LandUse, Address)
 
 
 ### mashed ###
 
-by.ownerv <- group_by (merged, Owner)
+by.ownerv <- group_by (dat, Owner)
 by.ownerp <- group_by (parcels, Owner)
 
 dist.ownerv <- summarise (by.ownerv, violations = n())
@@ -161,7 +119,7 @@ mashed <- merge (dist.ownerp, dist.ownerv, by = "Owner")
 
 ### Add # of Open Violations
 
-only.open <- merged [ merged$Violation.Status == "Open" , ]
+only.open <- dat [ dat$Violation.Status == "Open" , ]
 by.owneropen <- group_by (only.open, Owner)
 dist.ownerop <- summarise (by.owneropen, open = n())
 
@@ -194,10 +152,10 @@ mashed$`Square Feet Owned` <- round (mashed$`Square Feet Owned`, digits = 2)
 
 # Create Property Profiles
 
-props <- select (merged, Address, LandUse, Owner, AssessedVa)
+props <- select (dat, Address, LandUse, Owner, AssessedVa)
 
 by.prop <- group_by (props, Address)
-only.open <- merged [ merged$Violation.Status == "Open" , ]
+only.open <- dat [ dat$Violation.Status == "Open" , ]
 by.propen <- group_by (only.open, Address)
 
 
@@ -231,35 +189,33 @@ rm (acres.owned, by.owneropen, by.ownerp, by.ownerv, by.prop,
 ################ SERVER SECTION ###################
 ###################################################
 
-#0. Combine
-
 my.server <- function(input, output) 
 { 
   #static color vectors
   
   #color vector open closed
   col.vec.open.closed <- NULL
-  col.vec.open.closed <- ifelse( code.violations$Violation.Status == "Open", "orange", NA)
-  col.vec.open.closed <- ifelse( code.violations$Violation.Status == "Closed", "blanchedalmond", col.vec.open.closed  )
+  col.vec.open.closed <- ifelse( dat$Violation.Status == "Open", "orange", NA)
+  col.vec.open.closed <- ifelse( dat$Violation.Status == "Closed", "blanchedalmond", col.vec.open.closed  )
   
   #color vector severity
   col.vec.severity <- NULL
-  col.vec.severity <- ifelse( code.violations$Severity == "1", "thistle", NA )
-  col.vec.severity <- ifelse( code.violations$Severity == "2", "plum", col.vec.severity)
-  col.vec.severity <- ifelse( code.violations$Severity == "3", "orchid", col.vec.severity)
-  col.vec.severity <- ifelse( code.violations$Severity == "4", "mediumorchid", col.vec.severity)
-  col.vec.severity <- ifelse( code.violations$Severity == "5", "darkorchid", col.vec.severity)
-  col.vec.severity <- ifelse( code.violations$Severity == "FALSE", "whitesmoke", col.vec.severity)
+  col.vec.severity <- ifelse( dat$Severity == "1", "thistle", NA )
+  col.vec.severity <- ifelse( dat$Severity == "2", "plum", col.vec.severity)
+  col.vec.severity <- ifelse( dat$Severity == "3", "orchid", col.vec.severity)
+  col.vec.severity <- ifelse( dat$Severity == "4", "mediumorchid", col.vec.severity)
+  col.vec.severity <- ifelse( dat$Severity == "5", "darkorchid", col.vec.severity)
+  col.vec.severity <- ifelse( dat$Severity == "FALSE", "whitesmoke", col.vec.severity)
   
   #color vector time between open closed - TOC
   col.vec.TOC <- NULL
-  col.vec.TOC <- ifelse( code.violations$TimeBetweenOC >= 0 & code.violations$TimeBetweenOC <= 60, "skyblue", NA )
-  col.vec.TOC <- ifelse( code.violations$TimeBetweenOC >= 60 & code.violations$TimeBetweenOC <= 123, "deepskyblue", col.vec.TOC)
-  col.vec.TOC <- ifelse( code.violations$TimeBetweenOC >= 123 & code.violations$TimeBetweenOC <= 186, "dodgerblue", col.vec.TOC)
-  col.vec.TOC <- ifelse( code.violations$TimeBetweenOC >= 186 & code.violations$TimeBetweenOC <=249, "royalblue", col.vec.TOC)
-  col.vec.TOC <- ifelse( code.violations$TimeBetweenOC >= 249 & code.violations$TimeBetweenOC <= 312, "navy", col.vec.TOC)
-  col.vec.TOC <- ifelse( code.violations$TimeBetweenOC >= 312 & code.violations$TimeBetweenOC <= 400, "midnightblue", col.vec.TOC)
-  col.vec.TOC <- ifelse( code.violations$TimeBetweenOC == 9999, "whitesmoke", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 0 & dat$TimeBetweenOC <= 60, "skyblue", NA )
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 60 & dat$TimeBetweenOC <= 123, "deepskyblue", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 123 & dat$TimeBetweenOC <= 186, "dodgerblue", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 186 & dat$TimeBetweenOC <=249, "royalblue", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 249 & dat$TimeBetweenOC <= 312, "navy", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 312 & dat$TimeBetweenOC <= 400, "midnightblue", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC == 9999, "whitesmoke", col.vec.TOC)
   
   colvec <- reactive({
     
@@ -285,7 +241,9 @@ my.server <- function(input, output)
       setView(lng=-76.13, lat=43.03, zoom=13) %>%
       setMaxBounds(lng1=-75, lat1=41, lng2=-77,  lat2=45)
     
-    syr.map <- addCircleMarkers( syr.map, lng = lat.lon$lon, lat = lat.lon$lat, col=colvec(), popup = violation.description )
+    syr.map <- addCircleMarkers( syr.map, lng = lat.lon$lon, lat = lat.lon$lat, 
+                                 col=colvec(), popup = violation.description, 
+                                 radius = .5)
   })
   
   
@@ -293,7 +251,7 @@ my.server <- function(input, output)
   
   output$complaints <- renderDygraph({
     
-    dat.sub <- dat[ dat$Complaint.Type %in% input$show_comps , ]
+    dat.sub <- dat.post.2012[ dat.post.2012$Complaint.Type %in% input$show_comps , ]
     
     # Dropping months with zero complaints
     ncomps <- 0
@@ -339,7 +297,7 @@ my.server <- function(input, output)
   
   output$violations <- renderDygraph({
     
-    vdat.sub <- dat.v[ dat.v$Code %in% input$show_vios , ]
+    vdat.sub <- dat.post.2012[ dat.post.2012$Code %in% input$show_vios , ]
     
     nvios <- 0
     vio.checks <- as.data.frame(input$show_vios)
@@ -362,7 +320,7 @@ my.server <- function(input, output)
     vpretty.names <- format( as.Date(names(violation.sub)), "%b-%Y" )
     vmonth.labels <- format( as.Date(names(violation.sub)), "%b" )
     
-    # If month has no violations, then that month's label is null
+     # If month has no violations, then that month's label is null
     vmonth.labels[ violation.sub == 0 ] <- ""
     
     # Plot Violations
@@ -441,7 +399,7 @@ use.boxes <-
                 class = 'multicol', 
                 checkboxGroupInput(inputId  = 'use', 
                                    label    = NULL, 
-                                   choices  = c("All", unique(as.character(merged$LandUse))),
+                                   choices  = c("All", unique(as.character(dat$LandUse))),
                                    selected = "All",
                                    inline   = FALSE))) 
 
@@ -451,7 +409,7 @@ status.boxes <-
                 class = 'multicol', 
                 checkboxGroupInput(inputId  = 'complaint', 
                                    label    = NULL, 
-                                   choices  = c("All", unique(as.character(merged$Complaint.Status))),
+                                   choices  = c("All", unique(as.character(dat$Complaint.Status))),
                                    selected = "All",
                                    inline   = FALSE)))
 
@@ -461,7 +419,7 @@ dropdown <-
                 class = 'dropdown',
                 selectInput("status", 
                             "", 
-                            c("All",unique(as.character(merged$Violation.Status))))))
+                            c("All",unique(as.character(dat$Violation.Status))))))
 
 summary.drop <- 
   list(h3("Choose Violation Status"), 
@@ -490,12 +448,12 @@ summary.drop <-
 my.ui <- navbarPage("Orangespot", id="nav", collapsible=T,
                     #Tab 1. MAP
                     tabPanel("Map",
-                              tags$head(
-                                # includeScript("https://github.com/subartle/orangespot/blob/master/www/analytics.js"),
-                                tags$link(rel = "stylesheet", type = "text/css",
-                                          href = "ion.rangeSlider.skinFlat.css"),
-                                includeScript("https://github.com/subartle/orangespot/blob/master/www/spin.min.js"),
-                                includeCSS("https://github.com/subartle/orangespot/blob/master/www/styles.css")
+                             tags$head(
+                               includeScript("./www/analytics.js"),
+                               tags$link(rel = "stylesheet", type = "text/css",
+                                         href = "ion.rangeSlider.skinFlat.css"),
+                               includeScript("./www/spin.min.js"),
+                               includeCSS("./www/styles.css")
                               ),
                               
                               leafletOutput("mymap", width="100%", height="800" ), 
@@ -580,6 +538,7 @@ my.ui <- navbarPage("Orangespot", id="nav", collapsible=T,
                              fluidRow(
                                column( checkboxGroupInput("show_vios",
                                                           label= h3("Violation types:"),
+                                                          selected = "Section 308.1 - Infestation",
                                                           choices= violation.types),
                                        title="Violations Over Time",
                                        width=3 ),
@@ -587,9 +546,9 @@ my.ui <- navbarPage("Orangespot", id="nav", collapsible=T,
                                        width=9 ))
                     )),
                     
-                    #Tab 3. Most Wanted
+                    #Tab 3. Ownership
                     tabPanel("Ownership",
-                             navbarPage("Most Wanted Dashboard",
+                             navbarPage("Ownership Dashboard",
                                         tabPanel("Owner and Property Profiles",
                                                  titlePanel("Summary Tables for Owners and Properties"),
                                                  fluidRow(
@@ -608,7 +567,6 @@ my.ui <- navbarPage("Orangespot", id="nav", collapsible=T,
                                         ),
                                         
                                         tabPanel("Searchable",tweaks,
-                                                 titlePanel("Most Wanted List"),
                                                  fluidRow(
                                                    
                                                    #### The Three Widgets ####   
