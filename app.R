@@ -491,7 +491,7 @@ my.ui <- navbarPage("Orangespot", id="nav", collapsible=T,
                     #Tab 1. MAP
                     tabPanel("Map",
                               tags$head(
-                                includeScript("https://github.com/subartle/orangespot/blob/master/www/analytics.js"),
+                                # includeScript("https://github.com/subartle/orangespot/blob/master/www/analytics.js"),
                                 tags$link(rel = "stylesheet", type = "text/css",
                                           href = "ion.rangeSlider.skinFlat.css"),
                                 includeScript("https://github.com/subartle/orangespot/blob/master/www/spin.min.js"),
