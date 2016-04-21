@@ -186,7 +186,7 @@ rm (acres.owned, by.owneropen, by.ownerp, by.ownerv, by.prop,
   #color vector open closed
   col.vec.open.closed <- NULL
   col.vec.open.closed <- ifelse( dat$Violation.Status == "Open", "orange", NA)
-  col.vec.open.closed <- ifelse( dat$Violation.Status == "Closed", "gray80", col.vec.open.closed  )
+  col.vec.open.closed <- ifelse( dat$Violation.Status == "Closed", "gray20", col.vec.open.closed  )
   dat$col.vec.open.closed <- col.vec.open.closed
   
   
