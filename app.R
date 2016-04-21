@@ -538,7 +538,7 @@ my.ui <- navbarPage("Orangespot", id="nav", collapsible=T,
                                                               target="_blank"),
                                                             "or run locally with:"
                                                           ),
-                                                          pre("shiny::runGitHub("lecy/code-orange")"),
+                                                          pre("shiny::runGitHub('lecy/code-orange')"),
                                                           hr(class="thin")
                                                         )
                                                         # end about panel
