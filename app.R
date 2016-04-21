@@ -205,7 +205,7 @@ my.server <- function(input, output)
   #color vector open closed
   col.vec.open.closed <- NULL
   col.vec.open.closed <- ifelse( dat$Violation.Status == "Open", "orange", NA)
-  col.vec.open.closed <- ifelse( dat$Violation.Status == "Closed", "blanchedalmond", col.vec.open.closed  )
+  col.vec.open.closed <- ifelse( dat$Violation.Status == "Closed", "gray", col.vec.open.closed  )
   
   #color vector severity
   col.vec.severity <- NULL
