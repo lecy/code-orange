@@ -186,7 +186,7 @@ rm (acres.owned, by.owneropen, by.ownerp, by.ownerv, by.prop,
   #color vector open closed
   col.vec.open.closed <- NULL
   col.vec.open.closed <- ifelse( dat$Violation.Status == "Open", "orange", NA)
-  col.vec.open.closed <- ifelse( dat$Violation.Status == "Closed", "gray", col.vec.open.closed  )
+  col.vec.open.closed <- ifelse( dat$Violation.Status == "Closed", "gray80", col.vec.open.closed  )
   dat$col.vec.open.closed <- col.vec.open.closed
   
   
@@ -265,7 +265,7 @@ my.server <- function(input, output)
     
     syr.map <- addCircleMarkers( syr.map, lng = temp.dat$lon, lat = temp.dat$lat, 
                                  popup = temp.dat$Code, 
-                                 radius=4, color=NA, fillColor=colvec() )
+                                 radius=6, color=NA, fillColor=colvec() )
   })
   
   
