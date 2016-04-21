@@ -27,15 +27,12 @@ library( leaflet )
 dat <- readRDS("data/code.violations.final.rds")
 
 #reading parcels in for hector for now
-parcels <- read.csv( "https://raw.githubusercontent.com/lecy/code-orange/master/data/parcels.csv" )
+# parcels <- read.csv( "https://raw.githubusercontent.com/lecy/code-orange/master/data/parcels.csv" )
+parcels <- read.csv( "data/parcels.csv" )
+
+
 
 ## Map Set-Up ##
-
-
-
-#lat.lon
-lat.lon <- dat[ , c("lat","lon","Code") ] 
-lat.lon <- na.omit( lat.lon )
 
 #pop up 
 violation.description <- dat$Code 
@@ -184,7 +181,45 @@ rm (acres.owned, by.owneropen, by.ownerp, by.ownerv, by.prop,
 
 
 
+  #static color vectors
+  
+  #color vector open closed
+  col.vec.open.closed <- NULL
+  col.vec.open.closed <- ifelse( dat$Violation.Status == "Open", "orange", NA)
+  col.vec.open.closed <- ifelse( dat$Violation.Status == "Closed", "gray", col.vec.open.closed  )
+  dat$col.vec.open.closed <- col.vec.open.closed
+  
+  
+  #color vector severity
+  col.vec.severity <- NULL
+  col.vec.severity <- ifelse( dat$Severity == "1", "thistle", NA )
+  col.vec.severity <- ifelse( dat$Severity == "2", "plum", col.vec.severity)
+  col.vec.severity <- ifelse( dat$Severity == "3", "orchid", col.vec.severity)
+  col.vec.severity <- ifelse( dat$Severity == "4", "mediumorchid", col.vec.severity)
+  col.vec.severity <- ifelse( dat$Severity == "5", "darkorchid", col.vec.severity)
+  col.vec.severity <- ifelse( dat$Severity == "FALSE", "whitesmoke", col.vec.severity)
+  dat$col.vec.severity <- col.vec.severity
+  
+  
+  #color vector time between open closed - TOC
+  col.vec.TOC <- NULL
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 0 & dat$TimeBetweenOC <= 60, "skyblue", NA )
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 60 & dat$TimeBetweenOC <= 123, "deepskyblue", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 123 & dat$TimeBetweenOC <= 186, "dodgerblue", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 186 & dat$TimeBetweenOC <=249, "royalblue", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 249 & dat$TimeBetweenOC <= 312, "navy", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 312 & dat$TimeBetweenOC <= 400, "midnightblue", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC == 9999, "whitesmoke", col.vec.TOC)
+  dat$col.vec.TOC <- col.vec.TOC
+  
+
+## Select data by date for map
+
 # violation.date <- dat$Violation.Date
+
+#lat.lon
+lat.lon <- dat[ , c("lat","lon","Code") ] 
+lat.lon <- na.omit( lat.lon )
 
 getData <- function( start.date, end.date )
 {     these <- dat$Violation.Date >= start.date & dat$Violation.Date <= end.date
@@ -200,45 +235,21 @@ getData <- function( start.date, end.date )
 
 my.server <- function(input, output) 
 { 
-  #static color vectors
-  
-  #color vector open closed
-  col.vec.open.closed <- NULL
-  col.vec.open.closed <- ifelse( dat$Violation.Status == "Open", "orange", NA)
-  col.vec.open.closed <- ifelse( dat$Violation.Status == "Closed", "gray", col.vec.open.closed  )
-  
-  #color vector severity
-  col.vec.severity <- NULL
-  col.vec.severity <- ifelse( dat$Severity == "1", "thistle", NA )
-  col.vec.severity <- ifelse( dat$Severity == "2", "plum", col.vec.severity)
-  col.vec.severity <- ifelse( dat$Severity == "3", "orchid", col.vec.severity)
-  col.vec.severity <- ifelse( dat$Severity == "4", "mediumorchid", col.vec.severity)
-  col.vec.severity <- ifelse( dat$Severity == "5", "darkorchid", col.vec.severity)
-  col.vec.severity <- ifelse( dat$Severity == "FALSE", "whitesmoke", col.vec.severity)
-  
-  #color vector time between open closed - TOC
-  col.vec.TOC <- NULL
-  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 0 & dat$TimeBetweenOC <= 60, "skyblue", NA )
-  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 60 & dat$TimeBetweenOC <= 123, "deepskyblue", col.vec.TOC)
-  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 123 & dat$TimeBetweenOC <= 186, "dodgerblue", col.vec.TOC)
-  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 186 & dat$TimeBetweenOC <=249, "royalblue", col.vec.TOC)
-  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 249 & dat$TimeBetweenOC <= 312, "navy", col.vec.TOC)
-  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 312 & dat$TimeBetweenOC <= 400, "midnightblue", col.vec.TOC)
-  col.vec.TOC <- ifelse( dat$TimeBetweenOC == 9999, "whitesmoke", col.vec.TOC)
+
   
   colvec <- reactive({
     
     if( input$color == "Severity" ) 
     {
-      return(col.vec.severity)
+      return( dat$col.vec.severity )
     }  
     if(input$color == "Open/Closed")
     {
-      return(col.vec.open.closed)
+      return( dat$col.vec.open.closed )
     }
     if( input$color == "Time to Close")
     {
-      return(col.vec.TOC)
+      return( dat$col.vec.TOC )
     }
   })
   
@@ -520,14 +531,14 @@ my.ui <- navbarPage("Orangespot", id="nav", collapsible=T,
                                                             target="_blank")
                                                         ),
                                                         p("Project under development by ",
-                                                          p("Susannah Bartlett & Rory Tikalsky under the guidance of Professor Jesse Lecy, Maxwell School of Citizenship and Public Affairs.",
+                                                          p("MPA students at the Maxwell School under the guidance of Professor Jesse Lecy, Maxwell School of Citizenship and Public Affairs.",
                                                             HTML("&mdash;"),
                                                             "see the full code on ",
-                                                            a("github", href="http://github.com/subartle/orangespot",
+                                                            a("github", href="http://github.com/lecy/code-orange",
                                                               target="_blank"),
                                                             "or run locally with:"
                                                           ),
-                                                          pre("shiny::runGitHub('subartle/orangespot')"),
+                                                          pre("shiny::runGitHub("lecy/code-orange")"),
                                                           hr(class="thin")
                                                         )
                                                         # end about panel
