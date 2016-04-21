@@ -192,24 +192,38 @@ rm (acres.owned, by.owneropen, by.ownerp, by.ownerv, by.prop,
   
   #color vector severity
   col.vec.severity <- NULL
-  col.vec.severity <- ifelse( dat$Severity == "1", "thistle", NA )
-  col.vec.severity <- ifelse( dat$Severity == "2", "plum", col.vec.severity)
-  col.vec.severity <- ifelse( dat$Severity == "3", "orchid", col.vec.severity)
-  col.vec.severity <- ifelse( dat$Severity == "4", "mediumorchid", col.vec.severity)
-  col.vec.severity <- ifelse( dat$Severity == "5", "darkorchid", col.vec.severity)
+  col.vec.severity <- ifelse( dat$Severity == "1", "#A9A9A9", NA )
+  col.vec.severity <- ifelse( dat$Severity == "2", "#A9A9A9", col.vec.severity)
+  col.vec.severity <- ifelse( dat$Severity == "3", "orange", col.vec.severity)
+  col.vec.severity <- ifelse( dat$Severity == "4", "orange", col.vec.severity)
+  col.vec.severity <- ifelse( dat$Severity == "5", "darkred", col.vec.severity)
   col.vec.severity <- ifelse( dat$Severity == "FALSE", "whitesmoke", col.vec.severity)
+  # col.vec.severity <- NULL
+  # col.vec.severity <- ifelse( dat$Severity == "1", "thistle", NA )
+  # col.vec.severity <- ifelse( dat$Severity == "2", "plum", col.vec.severity)
+  # col.vec.severity <- ifelse( dat$Severity == "3", "orchid", col.vec.severity)
+  # col.vec.severity <- ifelse( dat$Severity == "4", "mediumorchid", col.vec.severity)
+  # col.vec.severity <- ifelse( dat$Severity == "5", "darkorchid", col.vec.severity)
+  # col.vec.severity <- ifelse( dat$Severity == "FALSE", "whitesmoke", col.vec.severity)
   dat$col.vec.severity <- col.vec.severity
   
   
   #color vector time between open closed - TOC
   col.vec.TOC <- NULL
-  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 0 & dat$TimeBetweenOC <= 60, "skyblue", NA )
-  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 60 & dat$TimeBetweenOC <= 123, "deepskyblue", col.vec.TOC)
-  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 123 & dat$TimeBetweenOC <= 186, "dodgerblue", col.vec.TOC)
-  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 186 & dat$TimeBetweenOC <=249, "royalblue", col.vec.TOC)
-  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 249 & dat$TimeBetweenOC <= 312, "navy", col.vec.TOC)
-  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 312 & dat$TimeBetweenOC <= 400, "midnightblue", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 0 & dat$TimeBetweenOC <= 60, "#A9A9A9", NA )
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 60 & dat$TimeBetweenOC <= 123, "orange", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 123 & dat$TimeBetweenOC <= 186, "orange", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 186 & dat$TimeBetweenOC <=249, "darkred", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 249 & dat$TimeBetweenOC <= 312, "darkred", col.vec.TOC)
+  col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 312 & dat$TimeBetweenOC <= 400, "darkred", col.vec.TOC)
   col.vec.TOC <- ifelse( dat$TimeBetweenOC == 9999, "whitesmoke", col.vec.TOC)
+  # col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 0 & dat$TimeBetweenOC <= 60, "skyblue", NA )
+  # col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 60 & dat$TimeBetweenOC <= 123, "deepskyblue", col.vec.TOC)
+  # col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 123 & dat$TimeBetweenOC <= 186, "dodgerblue", col.vec.TOC)
+  # col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 186 & dat$TimeBetweenOC <=249, "royalblue", col.vec.TOC)
+  # col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 249 & dat$TimeBetweenOC <= 312, "navy", col.vec.TOC)
+  # col.vec.TOC <- ifelse( dat$TimeBetweenOC >= 312 & dat$TimeBetweenOC <= 400, "midnightblue", col.vec.TOC)
+  # col.vec.TOC <- ifelse( dat$TimeBetweenOC == 9999, "whitesmoke", col.vec.TOC)
   dat$col.vec.TOC <- col.vec.TOC
   
 
