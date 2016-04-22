@@ -269,17 +269,18 @@ my.server <- function(input, output)
   
   output$mymap <- renderLeaflet({
     
-    temp.dat <- getData( start.date=input$dateRange[[1]], end.date=input$dateRange[[2]] )
-    
-    	
-
     # build base map on load
     # syr.map <- leaflet(data=temp.dat ) %>% 
     syr.map <- leaflet( data=data.frame(lon=-76.148223,lat=43.024003) ) %>% 
       addProviderTiles("CartoDB.Positron", tileOptions(minZoom=10, maxZoom=17))  %>%
       setView(lng=-76.13, lat=43.03, zoom=13) %>%
       setMaxBounds(lng1=-75, lat1=41, lng2=-77,  lat2=45)
-    
+  })
+  
+  observe({
+  
+    temp.dat <- getData( start.date=input$dateRange[[1]], end.date=input$dateRange[[2]] )
+  
     syr.map <- addCircleMarkers( syr.map, lng = temp.dat$lon, lat = temp.dat$lat, 
                                  popup = temp.dat$Code, 
                                  radius=6, color=NA, fillColor=colvec() )
