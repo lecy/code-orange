@@ -247,7 +247,7 @@ getData <- function( start.date, end.date )
 ################ SERVER SECTION ###################
 ###################################################
 
-my.server <- function(input, output) 
+my.server <- function(input, output, session) 
 { 
 
   
