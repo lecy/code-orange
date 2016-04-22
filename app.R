@@ -606,7 +606,7 @@ my.ui <- navbarPage("Orangespot", id="nav", collapsible=T,
                                                  )
                                         ),
                                         
-                                        tabPanel("Searchable",tweaks,
+                                        tabPanel("Search",tweaks,
                                                  fluidRow(
                                                    
                                                    #### The Three Widgets ####   
