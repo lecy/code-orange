@@ -6,7 +6,7 @@ You can launch the dashboard from R using the following commands:
 
 
 
-```
+```R
 install.packages( "RCurl" )
 install.packages( "shiny" )
 install.packages( "plyr" )
