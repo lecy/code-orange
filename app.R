@@ -281,7 +281,9 @@ my.server <- function(input, output)
   
     temp.dat <- getData( start.date=input$dateRange[[1]], end.date=input$dateRange[[2]] )
   
-    syr.map <- addCircleMarkers( syr.map, lng = temp.dat$lon, lat = temp.dat$lat, 
+    leafletProxy("syr.map", session, data=temp.dat ) %>%
+    # syr.map <- addCircleMarkers( syr.map, lng = temp.dat$lon, lat = temp.dat$lat,
+    addCircleMarkers( syr.map, lng = temp.dat$lon, lat = temp.dat$lat, 
                                  popup = temp.dat$Code, 
                                  radius=6, color=NA, fillColor=colvec() )
   })
