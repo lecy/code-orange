@@ -15,6 +15,10 @@ install.packages( "DT" )
 install.packages( "dplyr" )
 install.packages( "leaflet" )
 
+
+
+library( shiny )
+
 shiny::runGitHub("lecy/code-orange")
 ```
 
