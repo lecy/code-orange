@@ -10,13 +10,11 @@
 ################ SET-UP SECTION ###################
 ###################################################
 
-#setwd("C:/Users/snhalbritter/Documents/GitHub/code-orange")
 
 ## LOAD LIBRARIES ##
 
 library( RCurl )
 library( shiny )
-library( plyr )
 library( dygraphs )
 library( DT )
 library( dplyr )
