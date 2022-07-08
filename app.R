@@ -107,16 +107,16 @@ explorer <- select(dat, Complaint.Type, Violation.Date, Comply.By.Date,
 by.ownerv <- group_by (dat, Owner)
 by.ownerp <- group_by (parcels, Owner)
 
-dist.ownerv <- summarise (by.ownerv, violations = n())
-dist.ownerp <- summarise (by.ownerp, properties = n())
+dist.ownerv <- dplyr::summarise( by.ownerv, violations = n() )
+dist.ownerp <- dplyr::summarise( by.ownerp, properties = n() )
 
 mashed <- merge (dist.ownerp, dist.ownerv, by = "Owner")
 
 ### Add # of Open Violations
 
 only.open <- dat [ dat$Violation.Status == "Open" , ]
-by.owneropen <- group_by (only.open, Owner)
-dist.ownerop <- summarise (by.owneropen, open = n())
+by.owneropen <- group_by( only.open, Owner)
+dist.ownerop <- dplyr::summarise( by.owneropen, open = n() )
 
 mashed <- merge (mashed, dist.ownerop, by = "Owner", all = TRUE)
 mashed$open [is.na(mashed$open)] <- 0
@@ -128,13 +128,13 @@ mashed <- merge (mashed, acres.owned, by = "Owner")
 
 ### Add Square Feet Owned ###
 
-sqft.owned <- summarise (by.ownerp, sqft = sum(SqFt))
+sqft.owned <- dplyr::summarise (by.ownerp, sqft = sum(SqFt))
 mashed <- merge (mashed, sqft.owned, by = "Owner")
 
 
 ### Add Total Assessed Value ###
 
-total.value <- summarise (by.ownerp, value = sum(AssessedVa))
+total.value <- dplyr::summarise (by.ownerp, value = sum(AssessedVa))
 mashed <- merge (mashed, total.value, by = "Owner")
 
 colnames (mashed) <- c("Owner", "Properties", "Violations", "Open Violations", 
@@ -155,10 +155,10 @@ by.propen <- group_by (only.open, Address)
 
 
 ### Add Violations
-prop.v <- summarise (by.prop, violations = n())  
+prop.v <- dplyr::summarise (by.prop, violations = n() )  
 
 ### Add Open Cases
-dist.propen <- summarise (by.propen, open = n())  
+dist.propen <- dplyr::summarise (by.propen, open = n())  
 prop.mash <- merge (prop.v, dist.propen, by = "Address", all = TRUE)
 
 ### Finalize Table
